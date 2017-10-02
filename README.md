@@ -1,2 +1,1 @@
-# php-sdk
-Moota PHP SDK
+# moota-sdk

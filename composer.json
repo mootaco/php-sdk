@@ -1,0 +1,39 @@
+{
+    "name": "moota/moota-sdk",
+    "description": "PHP SDK for moota.co",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moota",
+            "homepage": "https://moota.co/"
+        },
+        {
+            "name": "Aprilus Lumbantoruan",
+            "email": "i@pilus.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.6.0",
+        "guzzlehttp/guzzle": "~3.8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.5.*",
+        "satooshi/php-coveralls": "1.0",
+        "codeless/jugglecode": "1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moota\\SDK\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moota\\SDK\\Test\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
