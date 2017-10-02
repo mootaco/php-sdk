@@ -19,7 +19,7 @@
         "guzzlehttp/guzzle": "~6.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.2.4",
+        "phpunit/phpunit": "~5.7.0",
         "satooshi/php-coveralls": "1.0",
         "codeless/jugglecode": "1.0"
     },

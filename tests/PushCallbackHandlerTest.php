@@ -1,9 +1,8 @@
 <?php
 
 use Moota\SDK\PushCallbackHandler;
-use PHPUnit\Framework\TestCase;
 
-class PushCallbackHandlerTest extends TestCase
+class PushCallbackHandlerTest extends PHPUnit_Framework_TestCase
 {
     public function testDecode()
     {
