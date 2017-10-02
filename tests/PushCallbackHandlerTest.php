@@ -29,29 +29,31 @@ class PushCallbackHandlerTest extends TestCase
 
         $pushData = $pushHandler->decode();
 
-        $eq = $this->assertEquals;
-
-        $eq(1, count($pushData));
+        $this->assertEquals(1, count($pushData));
 
         $pushData = $pushData[0];
         $dummyData = $dummyData[0];
 
-        $eq($pushData['id'], $dummyData['id']);
+        $this->assertEquals($pushData['id'], $dummyData['id']);
 
-        $eq($pushData['bank_id'], $dummyData['bank_id']);
+        $this->assertEquals($pushData['bank_id'], $dummyData['bank_id']);
 
-        $eq($pushData['account_number'], $dummyData['account_number']);
+        $this->assertEquals(
+            $pushData['account_number'], $dummyData['account_number']
+        );
 
-        $eq($pushData['bank_type'], $dummyData['bank_type']);
+        $this->assertEquals($pushData['bank_type'], $dummyData['bank_type']);
 
-        $eq($pushData['date'], $dummyData['date']);
+        $this->assertEquals($pushData['date'], $dummyData['date']);
 
-        $eq($pushData['amount'], $dummyData['amount']);
+        $this->assertEquals($pushData['amount'], $dummyData['amount']);
 
-        $eq($pushData['description'], $dummyData['description']);
+        $this->assertEquals(
+            $pushData['description'], $dummyData['description']
+        );
 
-        $eq($pushData['type'], $dummyData['type']);
+        $this->assertEquals($pushData['type'], $dummyData['type']);
 
-        $eq($pushData['balance'], $dummyData['balance']);
+        $this->assertEquals($pushData['balance'], $dummyData['balance']);
     }
 }
