@@ -2,6 +2,7 @@
 
 class PushCallbackHandler
 {
+    /** @var array $pushData */
     protected $pushData = [
         'id' => null,
         'bank_id' => null,
@@ -14,15 +15,20 @@ class PushCallbackHandler
         'balance' => null,
     ];
 
+    /** @var \Closure|null $receiverCallback */
     protected $receiverCallback;
 
+    /**
+     * @param  \Closure|null $receiverCallback
+     * @return \Moota\SDK\PushCallbackHandler
+     */
     public function __construct($receiverCallback = null)
     {
         $this->receiverCallback = $receiverCallback;
     }
 
     /**
-     * Get `HTTP_RAW_DATA` in a modern way
+     * Get `HTTP_RAW_DATA` in a non-deprecated way
      *
      * Returns a json string
      *
@@ -57,11 +63,11 @@ class PushCallbackHandler
      */
     public function decode()
     {
+        check_auth(true);
+
         $receiver = $this->receiverCallback
             ? $this->receiverCallback : $this->receivePushNotification;
 
-        $pushData = json_decode( $receiver(), true );
-
-        return $pushData === false ? self::$pushData : $pushData;
+        return json_decode( $receiver(), true );
     }
 }

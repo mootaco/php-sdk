@@ -6,6 +6,8 @@ class PushCallbackHandlerTest extends PHPUnit_Framework_TestCase
 {
     public function testDecode()
     {
+        intercept_auth();
+
         $banks = ['bca', 'mandiri', 'bri'];
 
         $transTypes = ['CR', 'DB'];
@@ -28,10 +30,22 @@ class PushCallbackHandlerTest extends PHPUnit_Framework_TestCase
 
         $pushData = $pushHandler->decode();
 
+        $this->assertNotNull($pushData);
+
         $this->assertEquals(1, count($pushData));
 
         $pushData = $pushData[0];
         $dummyData = $dummyData[0];
+
+        $this->assertContains('id', $pushData);
+        $this->assertContains('bank_id', $pushData);
+        $this->assertContains('account_number', $pushData);
+        $this->assertContains('bank_type', $pushData);
+        $this->assertContains('date', $pushData);
+        $this->assertContains('amount', $pushData);
+        $this->assertContains('description', $pushData);
+        $this->assertContains('type', $pushData);
+        $this->assertContains('balance', $pushData);
 
         $this->assertEquals($pushData['id'], $dummyData['id']);
 
