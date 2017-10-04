@@ -65,6 +65,6 @@ class PushCallbackHandler
 
     public static function createDefault()
     {
-        return new self(new Auth);
+        return new self(Auth::createDefault());
     }
 }

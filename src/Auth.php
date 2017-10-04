@@ -27,8 +27,10 @@ class Auth
      *
      * @return bool|null
      */
-    public function check(bool $pleaseDie = false)
+    public function check(bool $pleaseDie = null)
     {
+        $pleaseDie = $pleaseDie ?: false;
+
         if (empty($this->mode)) {
             $this->mode = env('MOOTA_MODE', 'testing');
             $this->apiKey = env('MOOTA_API_KEY');
@@ -95,5 +97,10 @@ class Auth
         }
 
         throw new MootaUnathorizedException;
+    }
+    
+    public static function createDefault()
+    {
+        return new self(new Util);
     }
 }
