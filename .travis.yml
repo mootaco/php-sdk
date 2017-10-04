@@ -5,3 +5,5 @@ php:
     - '7.0'
 
 install: "composer update --prefer-source $COMPOSER_FLAGS"
+
+before_scripts: "cp .env.example .env"

@@ -91,4 +91,31 @@ class Api
 
         return $bank;
     }
+
+    /**
+     * @param integer $bankId
+     * @param integer $transactionCount
+     */
+    public function getLastTransactions($bankId, $transactionCount = null)
+    {
+        $transactionCount = $transactionCount ?: 5;
+
+        $transactions = json_decode($this->getEndpoint(
+            "bank/{$bankId}/mutation/recent/{$transactionCount}"
+        ), true);
+
+        return $transactions;
+    }
+    /**
+     * @param integer $bankId
+     * @param integer $amount
+     */
+    public function searchTransactionsByAmount($bankId, $amount)
+    {
+        $transactions = json_decode($this->getEndpoint(
+            "bank/{$bankId}/mutation/search/{$amount}"
+        ), true);
+
+        return $transactions;
+    }
 }

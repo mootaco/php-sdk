@@ -168,4 +168,86 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('bank_id', $bank);
         $this->assertArrayHasKey('last_update', $bank);
     }
+
+    public function testGetLastTransactions()
+    {
+        $mockedApi = $this->createMock(Api::class);
+
+        $dummy = [
+            [
+             'date' => '2017-10-02 00:00:00',
+             'description' => 'In ea enim ad beatae porro qui temporibus. Perspiciatis est expedita nisi dicta. Impedit rerum quis voluptatem accusamus sed nam quia. In nihil optio nam facere perferendis distinctio velit.',
+             'amount' => 42032,
+             'type' => 'DB',
+             'balance' => 3922196,
+             'created_at' => '2017-10-02 11:53:24',
+             'mutation_id' => 'xbLjJK8WO7n',
+            ]
+        ];
+
+        $mockedApi->method('getLastTransactions')
+            ->willReturn($dummy);
+
+        $transactions = $mockedApi->getLastTransactions('l4Aqz9YzPVJ');
+
+        $this->assertNotNull($transactions);
+
+        $this->assertTrue( count($transactions) > 0 );
+
+        $transaction = $transactions[0];
+
+        $this->assertArrayHasKey('date', $transaction);
+        $this->assertArrayHasKey('description', $transaction);
+        $this->assertArrayHasKey('amount', $transaction);
+        $this->assertArrayHasKey('type', $transaction);
+        $this->assertArrayHasKey('balance', $transaction);
+        $this->assertArrayHasKey('created_at', $transaction);
+        $this->assertArrayHasKey('mutation_id', $transaction);
+    }
+
+    public function testSearchTransactionsByAmount()
+    {
+        $mockedApi = $this->createMock(Api::class);
+
+        $dummy = [
+            'from' => '2017-06-05 09:41:11',
+            'to' => '2017-06-12 09:41:11',
+            'mutation' => [
+                [
+                    'date' => '2017-06-02 00:00:00',
+                    'description' => 'TARIKAN ATM 02\/06',
+                    'amount' => 50000,
+                    'type' => 'DB',
+                    'balance' => 99999999,
+                    'created_at' => '2017-06-11 19:41:55',
+                    'mutation_id' => 'qB',
+                ]
+            ]
+        ];
+
+        $mockedApi->method('searchTransactionsByAmount')
+            ->willReturn($dummy);
+
+        $searchResult = $mockedApi->searchTransactionsByAmount(
+            'l4Aqz9YzPVJ', 0
+        );
+
+        $this->assertNotNull($searchResult);
+
+        $this->assertArrayHasKey('from', $searchResult);
+        $this->assertArrayHasKey('to', $searchResult);
+        $this->assertArrayHasKey('mutation', $searchResult);
+
+        $this->assertTrue( count($searchResult['mutation']) > 0 );
+
+        $transactions = $searchResult['mutation'][0];
+
+        $this->assertArrayHasKey('date', $transactions);
+        $this->assertArrayHasKey('description', $transactions);
+        $this->assertArrayHasKey('amount', $transactions);
+        $this->assertArrayHasKey('type', $transactions);
+        $this->assertArrayHasKey('balance', $transactions);
+        $this->assertArrayHasKey('created_at', $transactions);
+        $this->assertArrayHasKey('mutation_id', $transactions);
+    }
 }
