@@ -15,19 +15,24 @@ class Auth
     private $optApiKey;
     private $basicAuth;
     private $token;
-    private static $instance;
+    private $util;
+
+    public function __construct(Util $util)
+    {
+        $this->util = $util;
+    }
 
     /**
      * Check Moota Authorization
      *
      * @return bool|null
      */
-    public function check($pleaseDie)
+    public function check(bool $pleaseDie)
     {
         if (empty($this->optMode)) {
             $this->optMode = env('MOOTA_MODE', 'testing');
             $this->optApiKey = env('MOOTA_API_KEY');
-            $this->basicAuth = Util::getAuthHeader();
+            $this->basicAuth = $this->util->getAuthHeader();
         }
 
         if (!empty($this->basicAuth)) {
@@ -55,7 +60,7 @@ class Auth
             }
         }
 
-        if ( !empty( $this->token = Util::getApiKey() ) ) {
+        if ( !empty( $this->token = $this->util->getApiKey() ) ) {
             if (
                 $this->optMode == 'production'
                 && $this->optApiKey == $this->token
@@ -89,6 +94,6 @@ class Auth
             return true;
         }
 
-        
+        throw new MootaUnathorizedException;
     }
 }

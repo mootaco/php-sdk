@@ -6,5 +6,5 @@ because  globally installed phpunit version might differ from  locally installed
 
 Travis-CI uses locally installed PHPUnit.
 
-Minimum PHP version: `5.6`
+Minimum PHP version: `5.6`  
 PHPUnit version: `5.7` (`extends PHPUnit_Framework_TestCase`)

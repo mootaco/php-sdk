@@ -1,21 +1,5 @@
 <?php
 
-if (! function_exists('check_auth')) {
-    function check_auth($shouldDie = false, $shouldThrow = false) {
-        static $auth;
-
-        if (empty($auth)) {
-            $auth = new Moota\SDK\Auth;
-        }
-
-        if ($shouldThrow) {
-            return $auth->checkOrFail();
-        }
-
-        return $auth->check($shouldDie);
-    }
-}
-
 if (! function_exists('env')) {
     /**
      * Gets the value of an environment variable.

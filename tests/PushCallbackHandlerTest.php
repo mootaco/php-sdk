@@ -1,13 +1,12 @@
 <?php
 
+use Moota\SDK\Auth;
 use Moota\SDK\PushCallbackHandler;
 
 class PushCallbackHandlerTest extends PHPUnit_Framework_TestCase
 {
     public function testDecode()
     {
-        intercept_auth();
-
         $banks = ['bca', 'mandiri', 'bri'];
 
         $transTypes = ['CR', 'DB'];
@@ -24,9 +23,15 @@ class PushCallbackHandlerTest extends PHPUnit_Framework_TestCase
             'balance' => 0,
         ]];
 
-        $pushHandler = new PushCallbackHandler(function () use ($dummyData) {
-            return json_encode($dummyData);
-        });
+        $authChecker = $this->createMock(Auth::class);
+        $authChecker->method('check')->willReturn(true);
+
+        $pushHandler = new PushCallbackHandler(
+            $authChecker,
+            function () use ($dummyData) {
+                return json_encode($dummyData);
+            }
+        );
 
         $pushData = $pushHandler->decode();
 

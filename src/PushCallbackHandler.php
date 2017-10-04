@@ -2,18 +2,8 @@
 
 class PushCallbackHandler
 {
-    /** @var array $pushData */
-    protected $pushData = [
-        'id' => null,
-        'bank_id' => null,
-        'account_number' => null,
-        'bank_type' => null,
-        'date' => null,
-        'amount' => null,
-        'description' => null,
-        'type' => null,
-        'balance' => null,
-    ];
+    /** @var Auth $authChecker */
+    protected $authChecker;
 
     /** @var \Closure|null $receiverCallback */
     protected $receiverCallback;
@@ -22,8 +12,9 @@ class PushCallbackHandler
      * @param  \Closure|null $receiverCallback
      * @return \Moota\SDK\PushCallbackHandler
      */
-    public function __construct($receiverCallback = null)
+    public function __construct(Auth $authChecker, $receiverCallback = null)
     {
+        $this->authChecker = $authChecker;
         $this->receiverCallback = $receiverCallback;
     }
 
@@ -34,7 +25,8 @@ class PushCallbackHandler
      *
      * @return string
      */
-    protected function receivePushNotification() {
+    protected function receivePushNotification()
+    {
         return file_get_contents('php://input');
     }
 
@@ -63,11 +55,16 @@ class PushCallbackHandler
      */
     public function decode()
     {
-        check_auth(true);
+        $this->authChecker->check(true);
 
         $receiver = $this->receiverCallback
             ? $this->receiverCallback : $this->receivePushNotification;
 
         return json_decode( $receiver(), true );
+    }
+
+    public static function createDefault()
+    {
+        return new self(new Auth);
     }
 }

@@ -2,12 +2,12 @@
 
 class Util
 {
-    public static function getAuthHeader()
+    public function getAuthHeader()
     {
         return $_SERVER['HTTP_AUTHORIZATION'];
     }
 
-    public static function getApiKey()
+    public function getApiKey()
     {
         return $_GET['apikey'];
     }
