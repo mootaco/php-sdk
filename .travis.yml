@@ -6,4 +6,4 @@ php:
 
 install: "composer update --prefer-source $COMPOSER_FLAGS"
 
-before_scripts: "cp .env.example .env"
+before_script: "cp .env.example .env"
