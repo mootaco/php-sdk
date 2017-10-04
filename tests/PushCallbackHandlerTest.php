@@ -23,11 +23,11 @@ class PushCallbackHandlerTest extends PHPUnit_Framework_TestCase
             'balance' => 0,
         ]];
 
-        $authChecker = $this->createMock(Auth::class);
-        $authChecker->method('check')->willReturn(true);
+        $mockedAuthChecker = $this->createMock(Auth::class);
+        $mockedAuthChecker->method('check')->willReturn(true);
 
         $pushHandler = new PushCallbackHandler(
-            $authChecker,
+            $mockedAuthChecker,
             function () use ($dummyData) {
                 return json_encode($dummyData);
             }

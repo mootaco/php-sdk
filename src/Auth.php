@@ -11,8 +11,8 @@ use Moota\SDK\Exceptions\MootaUnathorizedException;
  */
 class Auth
 {
-    private $optMode;
-    private $optApiKey;
+    private $mode;
+    private $apiKey;
     private $basicAuth;
     private $token;
     private $util;
@@ -27,11 +27,11 @@ class Auth
      *
      * @return bool|null
      */
-    public function check(bool $pleaseDie)
+    public function check(bool $pleaseDie = false)
     {
-        if (empty($this->optMode)) {
-            $this->optMode = env('MOOTA_MODE', 'testing');
-            $this->optApiKey = env('MOOTA_API_KEY');
+        if (empty($this->mode)) {
+            $this->mode = env('MOOTA_MODE', 'testing');
+            $this->apiKey = env('MOOTA_API_KEY');
             $this->basicAuth = $this->util->getAuthHeader();
         }
 
@@ -46,15 +46,15 @@ class Auth
                 );
 
                 if (
-                    $this->optMode == 'production'
-                    && $this->optApiKey == $this->token
+                    $this->mode == 'production'
+                    && $this->apiKey == $this->token
                 ) {
                     return true;
                 }
             }
 
             if (
-                $this->optMode == 'testing' && $this->optApiKey == $this->token
+                $this->mode == 'testing' && $this->apiKey == $this->token
             ) {
                 return true;
             }
@@ -62,14 +62,14 @@ class Auth
 
         if ( !empty( $this->token = $this->util->getApiKey() ) ) {
             if (
-                $this->optMode == 'production'
-                && $this->optApiKey == $this->token
+                $this->mode == 'production'
+                && $this->apiKey == $this->token
             ) {
                 return true;
             }
 
             if (
-                $this->optMode == 'testing' && $this->optMode == $this->token
+                $this->mode == 'testing' && $this->mode == $this->token
             ) {
                 return true;
             }

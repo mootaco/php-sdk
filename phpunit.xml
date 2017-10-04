@@ -8,11 +8,9 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false">
-    <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests</directory>
-        </testsuite>
-    </testsuites>
+    <testsuite name="Unit">
+        <directory suffix="Test.php">./tests</directory>
+    </testsuite>
     <php>
         <env name="SERVER_ADDR" value="app.moota.co"/>
         <env name="MOOTA_MODE" value="testing"/>

@@ -42,3 +42,26 @@ if (! function_exists('env')) {
         return $value;
     }
 }
+
+if (! function_exists('random_string')) {
+    /**
+     * Gets the value of an environment variable.
+     *
+     * @param  integer  $length
+     * @return string
+     */
+    function random_string($length = 32)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        $charsLen = strlen($characters);
+
+        $randString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randString .= $characters[ rand( 0, $charsLen - 1 ) ];
+        }
+
+        return $randString;
+    }
+}
