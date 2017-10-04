@@ -18,6 +18,11 @@ class PushCallbackHandler
         $this->receiverCallback = $receiverCallback;
     }
 
+    public static function createDefault()
+    {
+        return new self(Auth::createDefault());
+    }
+
     /**
      * Get `HTTP_RAW_DATA` in a non-deprecated way
      *
@@ -61,10 +66,5 @@ class PushCallbackHandler
             ? $this->receiverCallback : $this->receivePushNotification;
 
         return json_decode( $receiver(), true );
-    }
-
-    public static function createDefault()
-    {
-        return new self(Auth::createDefault());
     }
 }

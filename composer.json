@@ -17,8 +17,7 @@
     "require": {
         "php": ">=5.6.0",
         "guzzlehttp/guzzle": "~6.0.0",
-        "vlucas/phpdotenv": "~2.2",
-        "kint-php/kint": "^2.2"
+        "vlucas/phpdotenv": "~2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.7.0",

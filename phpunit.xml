@@ -11,9 +11,4 @@
     <testsuite name="Unit">
         <directory suffix="Test.php">./tests</directory>
     </testsuite>
-    <php>
-        <env name="SERVER_ADDR" value="app.moota.co"/>
-        <env name="MOOTA_MODE" value="testing"/>
-        <env name="MOOTA_API_KEY" value="testing"/>
-    </php>
 </phpunit>
