@@ -5,8 +5,6 @@ use Moota\SDK\Exceptions\MootaUnathorizedException;
 /**
  * Class Auth
  * 
- * @method check
- * 
  * @package Moota\SDK
  */
 class Auth
@@ -32,8 +30,8 @@ class Auth
         $pleaseDie = $pleaseDie ?: false;
 
         if (empty($this->mode)) {
-            $this->mode = env('MOOTA_MODE', 'testing');
-            $this->apiKey = env('MOOTA_API_KEY');
+            $this->mode = Config::$sdkMode;
+            $this->apiKey = Config::$apiKey;
             $this->basicAuth = $this->util->getAuthHeader();
         }
 

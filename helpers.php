@@ -65,3 +65,13 @@ if (! function_exists('random_string')) {
         return $randString;
     }
 }
+
+if (! function_exists('camel_case')) {
+    function camel_case($value)
+    {
+        $value = strtolower($value);
+        $value = ucwords(str_replace(['-', '_'], ' ', $value));
+
+        return str_replace(' ', '', lcfirst($value));
+    }
+}

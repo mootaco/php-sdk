@@ -1,19 +1,20 @@
-<?php
+<?php namespace Moota\SDK\Test;
 
 use Moota\SDK\Auth;
+use Moota\SDK\Config;
 
-class AuthTest extends PHPUnit_Framework_TestCase
+class AuthTest extends TestCase
 {
     protected function getMockedUtil(
         $mode = 'testing', $token = null, $header = null
     )
     {
-        putenv("MOOTA_MODE={$mode}");
+        Config::$sdkMode = $mode;
 
         $mock = $this->createMock(\Moota\SDK\Util::class);
 
         if (!empty($token)) {
-            putenv("MOOTA_API_KEY={$token}");
+            Config::$apiKey = $token;
 
             $mock->method('getApiKey')
                 ->willReturn($token);

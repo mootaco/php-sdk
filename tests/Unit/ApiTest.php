@@ -1,8 +1,8 @@
-<?php
+<?php namespace Moota\SDK\Test;
 
 use Moota\SDK\Api;
 
-class ApiTest extends PHPUnit_Framework_TestCase
+class ApiTest extends TestCase
 {
     public function testGetProfile()
     {

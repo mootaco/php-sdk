@@ -1,8 +1,14 @@
 <?php namespace Moota\SDK;
 
+use Moota\SDK\Exceptions\MootaConfigEmptyException;
 use Moota\SDK\Exceptions\MootaHttpException;
 use GuzzleHttp\Client;
 
+/**
+ * Class Api
+ * 
+ * @package Moota\SDK
+ */
 class Api
 {
     /** @var string $baseUri */
@@ -11,26 +17,32 @@ class Api
     /** @var GuzzleHttp\Client $httpClient */
     protected $httpClient;
 
-    public function __construct($apiKey = null, $timeout = null)
+    public function __construct()
     {
-        $apiKey = $apiKey ?: env('MOOTA_API_KEY');
-        $timeout = $timeout ?: 30;
+        if (! Config::has('apiKey') || empty(Config::$apiKey) ) {
+            throw new MootaConfigEmptyException(null, 'apiKey');
+        }
 
-        $this->baseUri = env('SERVER_ADDR') . '/api/v1/';
+        if (! Config::has('serverAddress') || empty(Config::$serverAddress) ) {
+            throw new MootaConfigEmptyException(null, 'serverAddress');
+        }
+
+        if (! Config::has('apiTimeout') || empty(Config::$apiTimeout) ) {
+            throw new MootaConfigEmptyException(null, 'apiTimeout');
+        }
+
+        $apiKey = Config::$apiKey;
+
+        $this->baseUri = Config::$serverAddress . '/api/v1/';
 
         $this->httpClient = new Client([
             'base_uri' => $this->baseUri,
-            'timeout'  => $timeout,
+            'timeout'  => Config::$apiTimeout,
             'headers' => [
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer {$apiKey}",
             ],
         ]);
-    }
-
-    public static function createDefault()
-    {
-        return new self;
     }
 
     public function getEndpoint($uri, $queries = null)
@@ -106,6 +118,7 @@ class Api
 
         return $transactions;
     }
+
     /**
      * @param integer $bankId
      * @param integer $amount

@@ -9,6 +9,6 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuite name="Unit">
-        <directory suffix="Test.php">./tests</directory>
+        <directory suffix="Test.php">./tests/Unit</directory>
     </testsuite>
 </phpunit>
