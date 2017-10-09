@@ -62,9 +62,14 @@ class PushCallbackHandler
     {
         $this->authChecker->check(true);
 
-        $receiver = $this->receiverCallback
-            ? $this->receiverCallback : $this->receivePushNotification;
+        $strPushData = null;
 
-        return json_decode( $receiver(), true );
+        if (!empty($this->receiverCallback)) {
+            $strPushData = $this->receiverCallback();
+        } else {
+            $strPushData = $this->receivePushNotification();
+        }
+
+        return json_decode( $strPushData, true );
     }
 }
