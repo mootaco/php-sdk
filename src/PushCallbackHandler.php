@@ -64,7 +64,7 @@ class PushCallbackHandler
 
         $strPushData = null;
 
-        if (!empty($this->receiverCallback)) {
+        if (!empty($this->$receiverCallback)) {
             $strPushData = $this->$receiverCallback();
         } else {
             $strPushData = $this->receivePushNotification();
