@@ -64,8 +64,9 @@ class PushCallbackHandler
 
         $strPushData = null;
 
-        if (!empty($this->$receiverCallback)) {
-            $strPushData = $this->$receiverCallback();
+        if (!empty($this->receiverCallback)) {
+            // Closure::call doesn't exist in PHP5.6
+            $strPushData = call_user_func($this->receiverCallback);
         } else {
             $strPushData = $this->receivePushNotification();
         }
