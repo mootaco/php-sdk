@@ -27,7 +27,8 @@
     },
     "autoload": {
         "files": [
-            "helpers.php"
+            "helpers.php",
+            "constants.php"
         ],
         "psr-4": {
             "Moota\\SDK\\": "src/"

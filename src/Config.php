@@ -21,6 +21,15 @@ class Config
     /** @var string $serverAddress */
     public static $serverAddress = 'app.moota.co';
 
+    /** @var bool $useUniqueCode */
+    public static $useUniqueCode = true;
+
+    /** @var string $uqCodePreffix */
+    public static $uqCodePreffix = true;
+
+    /** @var string $uqCodeSuffix */
+    public static $uqCodeSuffix = true;
+
     /**
      * Set Config static variable's value from an array
      * 

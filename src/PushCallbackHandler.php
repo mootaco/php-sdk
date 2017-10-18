@@ -73,4 +73,23 @@ class PushCallbackHandler
 
         return json_decode( $strPushData, true );
     }
+
+    public static function decodeInflows(&$inflowAmounts = null)
+    {
+        // PHP < 7 do not support non null optional parameter
+        $inflowAmounts = $inflowAmounts ? $inflowAmounts : [];
+        $inflows = [];
+
+        $transactions = self::createDefault()->decode();
+
+        // only CR
+        foreach ($transactions as $trans) {
+            if ($trans['type'] === 'CR') {
+                $inflows[] = $trans;
+                $inflowAmounts[] = $trans['amount'];
+            }
+        }
+
+        return $mootaInflows;
+    }
 }
