@@ -41,10 +41,9 @@ class Config
     public static function fromArray($values, &$errors = null)
     {
         $success = true;
+        $errors = $errors ? $errors : [];
 
         foreach ($values as $key => $value) {
-            $key = camel_case($key);
-
             if ( self::has($key) ) {
                 self::${ $key } = $value;
             } else {

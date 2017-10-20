@@ -58,9 +58,13 @@ class PushCallbackHandler
      * 
      * @return array
      */
-    public function decode()
+    public function decode(&$error = null)
     {
-        $this->authChecker->check(true);
+        if (!$this->authChecker->check()) {
+            $error = 'SDK Authentication failed';
+
+            return null;
+        }
 
         $strPushData = null;
 
@@ -74,13 +78,19 @@ class PushCallbackHandler
         return json_decode( $strPushData, true );
     }
 
-    public static function decodeInflows(&$inflowAmounts = null)
+    public static function decodeInflows(
+        &$inflowAmounts = null, &$error = null
+    )
     {
         // PHP < 7 do not support non null optional parameter
         $inflowAmounts = $inflowAmounts ? $inflowAmounts : [];
         $inflows = [];
 
-        $transactions = self::createDefault()->decode();
+        $transactions = self::createDefault()->decode($error);
+
+        if (!empty($error)) {
+            return null;
+        }
 
         // only CR
         foreach ($transactions as $trans) {
@@ -90,6 +100,6 @@ class PushCallbackHandler
             }
         }
 
-        return $mootaInflows;
+        return $inflows;
     }
 }
