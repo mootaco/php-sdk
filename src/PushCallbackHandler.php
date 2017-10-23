@@ -1,5 +1,8 @@
 <?php namespace Moota\SDK;
 
+use Moota\SDK\Contracts\FetchesTransactions;
+use Moota\SDK\Contracts\MatchPayments;
+
 class PushCallbackHandler
 {
     /** @var Auth $authChecker */
@@ -7,6 +10,12 @@ class PushCallbackHandler
 
     /** @var \Closure|null $receiverCallback */
     protected $receiverCallback;
+
+    /** @var FetchesTransactions $transFetcher */
+    protected $transFetcher;
+
+    /** @var MatchPayments $paymentsMatcher */
+    protected $paymentsMatcher;
 
     /**
      * @param  \Closure|null $receiverCallback
@@ -33,6 +42,20 @@ class PushCallbackHandler
     protected function receivePushNotification()
     {
         return file_get_contents('php://input');
+    }
+
+    public function setTransactionFetcher(FetchesTransactions $fetcher)
+    {
+        $this->transFetcher = $fetcher;
+
+        return $this;
+    }
+
+    public function setPaymentMatcher(MatchPayments $paymentsMatcher)
+    {
+        $this->paymentsMatcher = $paymentsMatcher;
+
+        return $this;
     }
 
     /**
@@ -78,17 +101,23 @@ class PushCallbackHandler
         return json_decode( $strPushData, true );
     }
 
-    public static function decodeInflows(
-        &$inflowAmounts = null, &$error = null
+    /**
+     * Filter transactions coming from push data, 
+     * so that only inflow data remains
+     *
+     * @param  array        $transactions
+     * @param  array|null   $inflowAmounts
+     * @return array
+     */
+    public function filterInflows(
+        $transactions, &$inflowAmounts = null
     )
     {
         // PHP < 7 do not support non null optional parameter
         $inflowAmounts = $inflowAmounts ? $inflowAmounts : [];
         $inflows = [];
 
-        $transactions = self::createDefault()->decode($error);
-
-        if (!empty($error)) {
+        if (empty($transactions)) {
             return null;
         }
 
@@ -98,6 +127,30 @@ class PushCallbackHandler
                 $inflows[] = $trans;
                 $inflowAmounts[] = $trans['amount'];
             }
+        }
+
+        return $inflows;
+    }
+
+    /**
+     * @return array
+     */
+    public function handle()
+    {
+        $inflowAmounts = [];
+
+        $handler = PushCallbackHandler::createDefault();
+        $inflows = $handler->decode();
+
+        $inflows = $handler->filterInflows($inflows, $inflowAmounts);
+
+        if ( !empty($this->transFetcher) && !empty($this->paymentsMatcher) ) {
+            $storedTransactions = $this->transFetcher->fetch($inflowAmounts);
+
+            $payments = $this->paymentsMatcher
+                ->match($inflows, $storedTransactions);
+
+            return $payments;
         }
 
         return $inflows;
