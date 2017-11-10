@@ -1,7 +1,8 @@
 <?php namespace Moota\SDK;
 
-use Moota\SDK\Contracts\FetchesTransactions;
-use Moota\SDK\Contracts\MatchPayments;
+use Moota\SDK\Contracts\Push\FetchesOrders;
+use Moota\SDK\Contracts\Push\MatchesOrders;
+use Moota\SDK\Contracts\Push\FullfilsOrder;
 
 class PushCallbackHandler
 {
@@ -11,11 +12,14 @@ class PushCallbackHandler
     /** @var \Closure|null $receiverCallback */
     protected $receiverCallback;
 
-    /** @var FetchesTransactions $transFetcher */
-    protected $transFetcher;
+    /** @var FetchesOrders $orderFetcher */
+    protected $orderFetcher;
 
-    /** @var MatchPayments $paymentsMatcher */
-    protected $paymentsMatcher;
+    /** @var MatchesOrders $orderMatcher */
+    protected $orderMatcher;
+
+    /** @var FullfilsOrder $orderFullfiler */
+    protected $orderFullfiler;
 
     /**
      * @param  \Closure|null $receiverCallback
@@ -44,25 +48,32 @@ class PushCallbackHandler
         return file_get_contents('php://input');
     }
 
-    public function setTransactionFetcher(FetchesTransactions $fetcher)
+    public function setOrderFetcher(FetchesOrders $fetcher)
     {
-        $this->transFetcher = $fetcher;
+        $this->orderFetcher = $fetcher;
 
         return $this;
     }
 
-    public function setPaymentMatcher(MatchPayments $paymentsMatcher)
+    public function setOrderMatcher(MatchesOrders $matcher)
     {
-        $this->paymentsMatcher = $paymentsMatcher;
+        $this->orderMatcher = $matcher;
+
+        return $this;
+    }
+
+    public function setOrderFullfiler(FullfilsOrder $fullfiler)
+    {
+        $this->orderFullfiler = $fullfiler;
 
         return $this;
     }
 
     /**
      * Handles Moota's Push Notification Post request
-     * 
+     *
      * Returns an array of associated array, e.g.:
-     * 
+     *
      * ```
      * [
      *     [
@@ -78,7 +89,7 @@ class PushCallbackHandler
      *     ]
      * ]
      * ```
-     * 
+     *
      * @return array
      */
     public function decode(&$error = null)
@@ -102,7 +113,7 @@ class PushCallbackHandler
     }
 
     /**
-     * Filter transactions coming from push data, 
+     * Filter transactions coming from push data,
      * so that only inflow data remains
      *
      * @param  array        $transactions
@@ -139,20 +150,32 @@ class PushCallbackHandler
     {
         $inflowAmounts = [];
 
-        $handler = PushCallbackHandler::createDefault();
-        $inflows = $handler->decode();
+        $inflows = $this->decode();
+        $inflows = $this->filterInflows($inflows, $inflowAmounts);
+        $savedCount = 0;
+        $statusData = array(
+            'status' => 'not-ok', 'message' => 'No matching order found'
+        );
 
-        $inflows = $handler->filterInflows($inflows, $inflowAmounts);
+        if ( !empty($this->orderFetcher) && !empty($this->orderMatcher) ) {
+            $storedOrders = $this->orderFetcher->fetch($inflowAmounts);
 
-        if ( !empty($this->transFetcher) && !empty($this->paymentsMatcher) ) {
-            $storedTransactions = $this->transFetcher->fetch($inflowAmounts);
+            $payments = $this->orderMatcher
+                ->match($inflows, $storedOrders);
 
-            $payments = $this->paymentsMatcher
-                ->match($inflows, $storedTransactions);
-
-            return $payments;
+            foreach ($payments as $payment) {
+                if ($this->orderFullfiler->fullfil($payment)) {
+                    $savedCount++;
+                }
+            }
         }
 
-        return $inflows;
+        if ($savedCount > 0) {
+            $statusData = array(
+                'status' => 'ok', 'count' => $savedCount
+            );
+        }
+
+        return $statusData;
     }
 }

@@ -1,17 +1,20 @@
 <?php  namespace Moota\SDK\Test;
 
 use Moota\SDK\Auth;
+use Moota\SDK\Contracts\Push\FetchesOrders;
+use Moota\SDK\Contracts\Push\MatchesOrders;
+use Moota\SDK\Contracts\Push\FullfilsOrder;
 use Moota\SDK\PushCallbackHandler;
 
 class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testDecode()
+    public function testHandle()
     {
-        $banks = ['bca', 'mandiri', 'bri'];
+        $banks = array('bca', 'mandiri', 'bri');
 
-        $transTypes = ['CR', 'DB'];
+        $transTypes = array('CR', 'DB');
 
-        $dummyData = [[
+        $dummyData = array( array(
             'id' => mt_rand(200, 7000),
             'bank_id' => mt_rand(1, 10),
             'account_number' => mt_rand(91050075, 99999999),
@@ -21,57 +24,50 @@ class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
             'description' => 'description',
             'type' => $transTypes[ mt_rand( 0, 1 ) ],
             'balance' => 0,
-        ]];
+        ) );
 
         $mockedAuthChecker = $this->createMock(Auth::class);
         $mockedAuthChecker->method('check')->willReturn(true);
 
-        $pushHandler = new PushCallbackHandler(
+        $mockedOrderFetcher = $this->createMock(FetchesOrders::class);
+        $mockedOrderFetcher->method('fetch')->willReturn($dummyData);
+
+        $mockedOrderMatcher = $this->createMock(MatchesOrders::class);
+        $mockedOrderMatcher->method('match')->willReturn($dummyData);
+
+        $mockedOrderFullfiler = $this->createMock(FullfilsOrder::class);
+        $mockedOrderFullfiler->method('fullfil')->willReturn(true);
+
+        $pushHandler = (new PushCallbackHandler(
             $mockedAuthChecker,
             function () use ($dummyData) {
                 return json_encode($dummyData);
             }
-        );
+        ))
+            ->setOrderFetcher($mockedOrderFetcher)
+            ->setOrderMatcher($mockedOrderMatcher)
+            ->setOrderFullfiler($mockedOrderFullfiler)
+        ;
 
-        $pushData = $pushHandler->decode();
+        $response = $pushHandler->handle();
 
-        $this->assertNotNull($pushData);
+        $this->assertNotNull($response);
 
-        $this->assertEquals(1, count($pushData));
+        $this->assertContains('status', $response);
 
-        $pushData = $pushData[0];
-        $dummyData = $dummyData[0];
+        $this->assertEquals($response['status'], 'ok');
 
-        $this->assertContains('id', $pushData);
-        $this->assertContains('bank_id', $pushData);
-        $this->assertContains('account_number', $pushData);
-        $this->assertContains('bank_type', $pushData);
-        $this->assertContains('date', $pushData);
-        $this->assertContains('amount', $pushData);
-        $this->assertContains('description', $pushData);
-        $this->assertContains('type', $pushData);
-        $this->assertContains('balance', $pushData);
+        $mockedOrderFullfiler = $this->createMock(FullfilsOrder::class);
+        $mockedOrderFullfiler->method('fullfil')->willReturn(false);
 
-        $this->assertEquals($pushData['id'], $dummyData['id']);
+        $pushHandler->setOrderFullfiler($mockedOrderFullfiler);
 
-        $this->assertEquals($pushData['bank_id'], $dummyData['bank_id']);
+        $response = $pushHandler->handle();
 
-        $this->assertEquals(
-            $pushData['account_number'], $dummyData['account_number']
-        );
+        $this->assertNotNull($response);
 
-        $this->assertEquals($pushData['bank_type'], $dummyData['bank_type']);
+        $this->assertContains('status', $response);
 
-        $this->assertEquals($pushData['date'], $dummyData['date']);
-
-        $this->assertEquals($pushData['amount'], $dummyData['amount']);
-
-        $this->assertEquals(
-            $pushData['description'], $dummyData['description']
-        );
-
-        $this->assertEquals($pushData['type'], $dummyData['type']);
-
-        $this->assertEquals($pushData['balance'], $dummyData['balance']);
+        $this->assertEquals($response['status'], 'not-ok');
     }
 }

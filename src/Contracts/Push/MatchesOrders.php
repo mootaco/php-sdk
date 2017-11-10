@@ -1,6 +1,6 @@
-<?php namespace Moota\SDK\Contracts;
+<?php namespace Moota\SDK\Contracts\Push;
 
-interface MatchPayments
+interface MatchesOrders
 {
     /**
      * Matches payments sent by Moota to available transactions in storage.

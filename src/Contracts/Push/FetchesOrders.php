@@ -1,6 +1,6 @@
-<?php namespace Moota\SDK\Contracts;
+<?php namespace Moota\SDK\Contracts\Push;
 
-interface FetchesTransactions
+interface FetchesOrders
 {
     /**
      * Fetches currently available transaction in storage.
