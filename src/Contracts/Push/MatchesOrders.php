@@ -3,13 +3,13 @@
 interface MatchesOrders
 {
     /**
-     * Matches payments sent by Moota to available transactions in storage.
+     * Matches payments sent by Moota to available orders in storage.
      * Plugin specific implementation.
      *
      * @param array $payments
-     * @param array $transactions
+     * @param array $orders
      *
      * @return array
      */
-    public function match(array $payments, array $transactions);
+    public function match(array $payments, array $orders);
 }
