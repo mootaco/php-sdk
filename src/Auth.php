@@ -4,7 +4,7 @@ use Moota\SDK\Exceptions\MootaUnathorizedException;
 
 /**
  * Class Auth
- * 
+ *
  * @package Moota\SDK
  */
 class Auth
@@ -25,7 +25,7 @@ class Auth
      *
      * @return bool|null
      */
-    public function check(bool $pleaseDie = null)
+    public function check($pleaseDie = null)
     {
         $pleaseDie = $pleaseDie ?: false;
 
@@ -96,7 +96,7 @@ class Auth
 
         throw new MootaUnathorizedException;
     }
-    
+
     public static function createDefault()
     {
         return new self(new Util);

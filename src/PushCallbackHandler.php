@@ -22,8 +22,8 @@ class PushCallbackHandler
     protected $orderFullfiler;
 
     /**
-     * @param  \Closure|null $receiverCallback
-     * @return \Moota\SDK\PushCallbackHandler
+     * @param Auth $authChecker
+     * @param \Closure|null $receiverCallback
      */
     public function __construct(Auth $authChecker, $receiverCallback = null)
     {
@@ -125,8 +125,8 @@ class PushCallbackHandler
     )
     {
         // PHP < 7 do not support non null optional parameter
-        $inflowAmounts = $inflowAmounts ? $inflowAmounts : [];
-        $inflows = [];
+        $inflowAmounts = $inflowAmounts ?: array();
+        $inflows = array();
 
         if (empty($transactions)) {
             return null;
@@ -144,38 +144,66 @@ class PushCallbackHandler
     }
 
     /**
+     * Handles Bank Account Mutation data that was pushed by Moota
+     *
      * @return array
      */
     public function handle()
     {
         $inflowAmounts = [];
 
-        $inflows = $this->decode();
-        $inflows = $this->filterInflows($inflows, $inflowAmounts);
-        $savedCount = 0;
-        $statusData = array(
-            'status' => 'not-ok', 'message' => 'No matching order found'
-        );
+        try {
+            $inflows = $this->decode();
+            $inflows = $this->filterInflows($inflows, $inflowAmounts);
 
-        if ( !empty($this->orderFetcher) && !empty($this->orderMatcher) ) {
-            $storedOrders = $this->orderFetcher->fetch($inflowAmounts);
+            $savedCount = 0;
 
-            $payments = $this->orderMatcher
-                ->match($inflows, $storedOrders);
+            if ( !empty($this->orderFetcher) && !empty($this->orderMatcher) ) {
+                $storedOrders = $this->orderFetcher->fetch($inflowAmounts);
 
-            foreach ($payments as $payment) {
-                if ($this->orderFullfiler->fullfil($payment)) {
-                    $savedCount++;
+                $payments = $this->orderMatcher
+                    ->match($inflows, $storedOrders);
+
+                foreach ($payments as $payment) {
+                    if ($this->orderFullfiler->fullfil($payment)) {
+                        $savedCount++;
+                    }
                 }
             }
-        }
 
-        if ($savedCount > 0) {
-            $statusData = array(
-                'status' => 'ok', 'count' => $savedCount
+            if ($savedCount > 0) {
+                return array(
+                    'status' => 'ok', 'count' => $savedCount,
+                );
+            } else {
+                return array(
+                    'status' => 'not-found',
+                    'message' => 'No matching order found',
+                );
+            }
+        } catch (\Exception $ex) {
+            return array(
+                'status' => 'error', 'message' => 'Unknown error occured',
             );
         }
+    }
 
-        return $statusData;
+    /**
+     * Converts `PushCallbackHandler#handle` response array into
+     * Http Status Code
+     *
+     * @param array
+     * @return int
+     */
+    public static function statusDataToHttpCode($statusData) {
+        if (empty($statusData['status'])) {
+            return 500;
+        }
+
+        switch ($statusData['status']) {
+            case 'not-found': return 404;
+            case 'error': return 500;
+            default: return 200;
+        }
     }
 }

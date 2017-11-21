@@ -1,12 +1,11 @@
 <?php namespace Moota\SDK;
 
 use Moota\SDK\Exceptions\MootaConfigEmptyException;
-use Moota\SDK\Exceptions\MootaHttpException;
 use GuzzleHttp\Client;
 
 /**
  * Class Api
- * 
+ *
  * @package Moota\SDK
  */
 class Api
@@ -35,14 +34,14 @@ class Api
 
         $this->baseUri = Config::$serverAddress . '/api/v1/';
 
-        $this->httpClient = new Client([
+        $this->httpClient = new Client(array(
             'base_uri' => $this->baseUri,
             'timeout'  => Config::$apiTimeout,
             'headers' => [
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer {$apiKey}",
             ],
-        ]);
+        ));
     }
 
     public function getEndpoint($uri, $queries = null)
@@ -58,7 +57,7 @@ class Api
 
     /**
      * Get current user's profile
-     * 
+     *
      * @return array
      */
     public function getProfile()
@@ -70,7 +69,7 @@ class Api
 
     /**
      * Get current user's balance
-     * 
+     *
      * @return array
      */
     public function getBalance()
@@ -80,9 +79,15 @@ class Api
         return $balance;
     }
 
-    public function listBanks()
+    /**
+     * Get all banks registered to current Moota customer
+     * @param int $page
+     *
+     * @return array
+     */
+    public function listBanks($page = null)
     {
-        $queries = null;
+        $queries = empty($page) ? array() : compact('page');
 
         $responseString = $this->getEndpoint('bank', $queries);
 
@@ -90,10 +95,10 @@ class Api
 
         return $banks;
     }
-    
+
     /**
      * Get detailed info for a bank
-     * 
+     *
      * @param string $bankId
      * @return array
      */

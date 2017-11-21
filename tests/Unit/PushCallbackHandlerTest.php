@@ -53,7 +53,8 @@ class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotNull($response);
 
-        $this->assertContains('status', $response);
+        // using assertContains here somehow fails on php7
+        $this->assertTrue( array_key_exists('status', $response) );
 
         $this->assertEquals($response['status'], 'ok');
 
@@ -66,8 +67,9 @@ class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotNull($response);
 
-        $this->assertContains('status', $response);
+        // using assertContains here somehow fails on php7
+        $this->assertTrue( array_key_exists('status', $response) );
 
-        $this->assertEquals($response['status'], 'not-ok');
+        $this->assertEquals($response['status'], 'not-found');
     }
 }
