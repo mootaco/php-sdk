@@ -23,6 +23,8 @@ class Auth
     /**
      * Check Moota Authorization
      *
+     * @param bool $pleaseDie
+     *
      * @return bool|null
      */
     public function check($pleaseDie = null)

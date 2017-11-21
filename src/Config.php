@@ -21,17 +21,17 @@ class Config
     /** @var string $sdkMode production or testing */
     public static $sdkMode = 'production';
 
-    /** @var string $serverAddress */
-    public static $serverAddress = 'https://app.moota.co';
-
     /** @var bool $useUniqueCode */
     public static $useUniqueCode = true;
 
-    /** @var integer $uqLowerLimit */
-    public static $uqLowerLimit = null;
+    /** @var string $uqMode INCREASE | DECREASE */
+    public static $uqMode = null;
 
-    /** @var integer $uqUpperLimit */
-    public static $uqUpperLimit = null;
+    /** @var integer $uqMin */
+    public static $uqMin = null;
+
+    /** @var integer $uqMax */
+    public static $uqMax = null;
 
     /**
      * Set Config static variable's value from an array
@@ -53,11 +53,6 @@ class Config
 
             if ( self::has($key) ) {
                 self::${ $key } = $value;
-
-                if ($key === 'sdkMode') {
-                    self::$serverAddress = $value === 'production'
-                        ? self::LIVE_URL : self::SANDBOX_URL;
-                }
             } else {
                 $errors[] = "`$key` does not exists";
                 $success = $success && false;
@@ -78,10 +73,9 @@ class Config
             'apiKey' => self::$apiKey,
             'apiTimeout' => self::$apiTimeout,
             'sdkMode' => self::$sdkMode,
-            'serverAddress' => self::$serverAddress,
             'useUniqueCode' => self::$useUniqueCode,
-            'uqLowerLimit' => self::$uqLowerLimit,
-            'uqUpperLimit' => self::$uqUpperLimit,
+            'uqMin' => self::$uqMin,
+            'uqMax' => self::$uqMax,
         );
     }
 

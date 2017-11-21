@@ -10,9 +10,6 @@ use GuzzleHttp\Client;
  */
 class Api
 {
-    /** @var string $baseUri */
-    protected $baseUri;
-
     /** @var GuzzleHttp\Client $httpClient */
     protected $httpClient;
 
@@ -22,8 +19,8 @@ class Api
             throw new MootaConfigEmptyException(null, 'apiKey');
         }
 
-        if (! Config::has('serverAddress') || empty(Config::$serverAddress) ) {
-            throw new MootaConfigEmptyException(null, 'serverAddress');
+        if (! Config::has('sdkMode') || empty(Config::$sdkMode) ) {
+            throw new MootaConfigEmptyException(null, 'sdkMode');
         }
 
         if (! Config::has('apiTimeout') || empty(Config::$apiTimeout) ) {
@@ -32,10 +29,8 @@ class Api
 
         $apiKey = Config::$apiKey;
 
-        $this->baseUri = Config::$serverAddress . '/api/v1/';
-
         $this->httpClient = new Client(array(
-            'base_uri' => $this->baseUri,
+            'base_uri' => Config::getServerAddress() . '/api/v1/',
             'timeout'  => Config::$apiTimeout,
             'headers' => [
                 'Accept' => 'application/json',
@@ -100,6 +95,7 @@ class Api
      * Get detailed info for a bank
      *
      * @param string $bankId
+     *
      * @return array
      */
     public function getBank($bankId)
@@ -112,6 +108,8 @@ class Api
     /**
      * @param integer $bankId
      * @param integer $transactionCount
+     *
+     * @return array
      */
     public function getLastTransactions($bankId, $transactionCount = null)
     {
@@ -127,11 +125,28 @@ class Api
     /**
      * @param integer $bankId
      * @param integer $amount
+     *
+     * @return array
      */
     public function searchTransactionsByAmount($bankId, $amount)
     {
         $transactions = json_decode($this->getEndpoint(
             "bank/{$bankId}/mutation/search/{$amount}"
+        ), true);
+
+        return $transactions;
+    }
+
+    /**
+     * @param integer $bankId
+     * @param string $desc
+     *
+     * @return array
+     */
+    public function searchTransactionsByDesc($bankId, $desc)
+    {
+        $transactions = json_decode($this->getEndpoint(
+            "bank/{$bankId}/mutation/search/description/{$desc}"
         ), true);
 
         return $transactions;
