@@ -1,6 +1,6 @@
 <?php namespace Moota\SDK\Contracts\Push;
 
-interface FullfilsOrder
+interface FulfillsOrder
 {
     /**
      * Fullfils an order.
@@ -11,5 +11,5 @@ interface FullfilsOrder
      *
      * @return bool
      */
-    public function fullfil($order);
+    public function fulfill($order);
 }

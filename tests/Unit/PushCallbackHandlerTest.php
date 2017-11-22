@@ -3,7 +3,7 @@
 use Moota\SDK\Auth;
 use Moota\SDK\Contracts\Push\FetchesOrders;
 use Moota\SDK\Contracts\Push\MatchesOrders;
-use Moota\SDK\Contracts\Push\FullfilsOrder;
+use Moota\SDK\Contracts\Push\FulfillsOrder;
 use Moota\SDK\PushCallbackHandler;
 
 class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
@@ -35,7 +35,7 @@ class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
         $mockedOrderMatcher = $this->createMock(MatchesOrders::class);
         $mockedOrderMatcher->method('match')->willReturn($dummyData);
 
-        $mockedOrderFullfiler = $this->createMock(FullfilsOrder::class);
+        $mockedOrderFullfiler = $this->createMock(FulfillsOrder::class);
         $mockedOrderFullfiler->method('fullfil')->willReturn(true);
 
         $pushHandler = (new PushCallbackHandler(
@@ -46,7 +46,7 @@ class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
         ))
             ->setOrderFetcher($mockedOrderFetcher)
             ->setOrderMatcher($mockedOrderMatcher)
-            ->setOrderFullfiler($mockedOrderFullfiler)
+            ->setOrderFulfiller($mockedOrderFullfiler)
         ;
 
         $response = $pushHandler->handle();
@@ -58,10 +58,10 @@ class PushCallbackHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($response['status'], 'ok');
 
-        $mockedOrderFullfiler = $this->createMock(FullfilsOrder::class);
+        $mockedOrderFullfiler = $this->createMock(FulfillsOrder::class);
         $mockedOrderFullfiler->method('fullfil')->willReturn(false);
 
-        $pushHandler->setOrderFullfiler($mockedOrderFullfiler);
+        $pushHandler->setOrderFulfiller($mockedOrderFullfiler);
 
         $response = $pushHandler->handle();
 

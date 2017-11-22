@@ -2,7 +2,8 @@
 
 use Moota\SDK\Contracts\Push\FetchesOrders;
 use Moota\SDK\Contracts\Push\MatchesOrders;
-use Moota\SDK\Contracts\Push\FullfilsOrder;
+use Moota\SDK\Contracts\Push\FulfillsOrder;
+use Moota\SDK\Contracts\Push\FindsDuplicate;
 
 class PushCallbackHandler
 {
@@ -18,8 +19,11 @@ class PushCallbackHandler
     /** @var MatchesOrders $orderMatcher */
     protected $orderMatcher;
 
-    /** @var FullfilsOrder $orderFullfiler */
-    protected $orderFullfiler;
+    /** @var FulfillsOrder $orderFulfiller */
+    protected $orderFulfiller;
+
+    /** @var FindsDuplicate $dupeFinder */
+    protected $dupeFinder;
 
     /**
      * @param Auth $authChecker
@@ -62,9 +66,16 @@ class PushCallbackHandler
         return $this;
     }
 
-    public function setOrderFullfiler(FullfilsOrder $fullfiler)
+    public function setOrderFulfiller(FulfillsOrder $fulfiller)
     {
-        $this->orderFullfiler = $fullfiler;
+        $this->orderFulfiller = $fulfiller;
+
+        return $this;
+    }
+
+    public function setDupeFinder(FindsDuplicate $dupeFinder)
+    {
+        $this->dupeFinder = $dupeFinder;
 
         return $this;
     }
@@ -161,11 +172,14 @@ class PushCallbackHandler
             if ( !empty($this->orderFetcher) && !empty($this->orderMatcher) ) {
                 $storedOrders = $this->orderFetcher->fetch($inflowAmounts);
 
-                $payments = $this->orderMatcher
-                    ->match($inflows, $storedOrders);
+                if ( !empty($this->dupeFinder) ) {
+                    $this->dupeFinder->findDupes($inflows, $storedOrders);
+                }
+
+                $payments = $this->orderMatcher->match($inflows, $storedOrders);
 
                 foreach ($payments as $payment) {
-                    if ($this->orderFullfiler->fullfil($payment)) {
+                    if ($this->orderFulfiller->fulfill($payment)) {
                         $savedCount++;
                     }
                 }
@@ -183,7 +197,8 @@ class PushCallbackHandler
             }
         } catch (\Exception $ex) {
             return array(
-                'status' => 'error', 'message' => 'Unknown error occured',
+                'status' => 'error',
+                'message' => $ex->getMessage(),
             );
         }
     }
