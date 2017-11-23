@@ -81,7 +81,26 @@ class Config
 
     public static function getServerAddress()
     {
-        return self::$sdkMode === 'production'
-            ? self::LIVE_URL : self::SANDBOX_URL;
+        return self::isLive() ? self::LIVE_URL : self::SANDBOX_URL;
+    }
+
+    public static function isLive()
+    {
+        return self::$sdkMode === 'production';
+    }
+
+    public static function isProduction()
+    {
+        return self::isLive();
+    }
+
+    public static function isTesting()
+    {
+        return ! self::isLive();
+    }
+
+    public static function isSandbox()
+    {
+        return ! self::isLive();
     }
 }

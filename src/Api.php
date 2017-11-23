@@ -151,4 +151,9 @@ class Api
 
         return $transactions;
     }
+
+    public function linkOrderWithMoota($mootaId, $orderId)
+    {
+        // TODO: Implement #linkOrderWithMoota
+    }
 }
