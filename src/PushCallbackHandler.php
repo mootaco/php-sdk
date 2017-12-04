@@ -179,7 +179,7 @@ class PushCallbackHandler
                 $payments = $this->orderMatcher->match($inflows, $storedOrders);
 
                 foreach ($payments as $payment) {
-                    if ($this->orderFulfiller->fulfill($payment)) {
+                    if ( $this->orderFulfiller->fulfill($payment) ) {
                         $savedCount++;
                     }
                 }
