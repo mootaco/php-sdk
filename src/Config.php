@@ -24,7 +24,7 @@ class Config
     /** @var bool $useUniqueCode */
     public static $useUniqueCode = true;
 
-    /** @var string $uqMode INCREASE | DECREASE */
+    /** @var string $uqMode INCREASE or DECREASE */
     public static $uqMode = null;
 
     /** @var integer $uqMin */
@@ -36,8 +36,8 @@ class Config
     /**
      * Set Config static variable's value from an array
      *
-     * @param  array Associative array of key-value pairs
-     * @param  array Errors that might come up
+     * @param array $values Associative array of key-value pairs
+     * @param array $errors Errors that might come up
      *
      * @return bool  Whether there are errors
      */
@@ -64,7 +64,7 @@ class Config
 
     public static function has($key)
     {
-        return property_exists( self::class, $key );
+        return property_exists(self::class, $key);
     }
 
     public static function toArray()
@@ -74,6 +74,7 @@ class Config
             'apiTimeout' => self::$apiTimeout,
             'sdkMode' => self::$sdkMode,
             'useUniqueCode' => self::$useUniqueCode,
+            'uqMode' => self::$uqMode,
             'uqMin' => self::$uqMin,
             'uqMax' => self::$uqMax,
         );
